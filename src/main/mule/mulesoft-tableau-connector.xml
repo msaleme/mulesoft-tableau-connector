@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tableau-specialist="http://www.mulesoft.org/schema/mule/tableau-specialist"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/tableau-specialist http://www.mulesoft.org/schema/mule/tableau-specialist/current/mule-tableau-specialist.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a2dd9391-9f3a-4fad-8642-9b75f7ed3869" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<tableau-specialist:tableau-specialist-config name="Tableau_Specialist_Rest_Configuration" doc:name="Tableau Specialist Rest Configuration" doc:id="ac4633eb-ad4e-4ae2-9645-404b4135bbd9" >
+		<tableau-specialist:basic-username-password-connection serverUrl="localhost" apiVersion="1" username="{username}" password="{}" contentUrl="index.html"/>
+	</tableau-specialist:tableau-specialist-config>
+	<flow name="mulesoft-tableau-connectorFlow" doc:id="98bee601-2f32-47da-8b9e-20595327c71e" >
+		<http:listener doc:name="Listener" doc:id="2a37e317-e146-475d-a2f8-9214c6068864" config-ref="HTTP_Listener_config" path="/tableau"/>
+		<tableau-specialist:publish-workbook doc:name="Publish workbook" doc:id="edbffd1d-0a1c-4734-bfad-94d2ba52aff9" config-ref="Tableau_Specialist_Rest_Configuration">
+			<tableau-specialist:workbook-request-options >
+				<tableau-specialist:publish-workbook-request-body />
+			</tableau-specialist:workbook-request-options>
+		</tableau-specialist:publish-workbook>
+		<tableau-specialist:update-project doc:name="Update project" doc:id="53862436-4dd4-4ea6-a4ad-967c0b793184" config-ref="Tableau_Specialist_Rest_Configuration" projectId="12"/>
+	</flow>
+	<flow name="mulesoft-tableau-connectorFlow1" doc:id="e707b931-a344-4d72-b9ad-71b5e4878706" >
+		<tableau-specialist:new-or-modified-datasource-listener doc:name="On New Or Modified Data Source" doc:id="afbf97e5-7eb3-433b-a9f0-9c73e355310f" config-ref="Tableau_Specialist_Rest_Configuration">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</tableau-specialist:new-or-modified-datasource-listener>
+	</flow>
+</mule>
